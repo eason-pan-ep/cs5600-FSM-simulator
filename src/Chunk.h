@@ -12,7 +12,6 @@ public:
     int size;
     bool isFree;
     Chunk* next;
-    Chunk* prev;
 
 public:
     Chunk(int address, int size, bool isFree){
@@ -20,7 +19,6 @@ public:
         this->size = size;
         this->isFree = isFree;
         this->next = nullptr;
-        this->prev = nullptr;
     }
 };
 
