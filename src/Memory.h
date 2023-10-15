@@ -70,7 +70,6 @@ public:
             return 0;
         }
         if(this->canAllocate(spaceSize)){ //check whether we can allocate such amount of space
-            this->spaceLeft -= spaceSize;
             int searchCount = this->useMemory(spaceSize, 1);
             return searchCount;
         }
@@ -87,11 +86,11 @@ public:
         if(0 == spaceSize){
             return 0;
         }
-        if(this->canFree(spaceSize)){ //check whether we can free such amount of space
-            int processingSize;
-            processingSize = std::min((this->capacity - this->spaceLeft), spaceSize);
-            this->spaceLeft += processingSize;
+        int processingSize;
+        processingSize = std::min((this->capacity - this->spaceLeft), spaceSize);
+        if(this->canFree()){ //check whether we can free such amount of space
             int searchCount = this->useMemory(processingSize, 0);
+
             return searchCount;
         }
         return -1;
@@ -168,23 +167,42 @@ private:
         while(leftSize > 0){
             if(this->currentPos == nullptr){
                 this->currentPos = this->memoryList;
+                searchCount += 1;
             }
 
             if(this->currentPos->isFree == !assignValue){
-                if(this->currentPos->size == spaceSize){ //current position is the same as required
+                if(this->currentPos->size == leftSize){ //current position is the same as required
                     this->currentPos->isFree = assignValue;
+                    if(1 == mode){
+                        this->spaceLeft -= leftSize;
+                    } else{
+                        this->spaceLeft += leftSize;
+                    }
                     leftSize = 0;
-                }else if(this->currentPos->size > spaceSize){ // current position is bigger than required
+                }else if(this->currentPos->size > leftSize){ // current position is bigger than required
                     this->currentPos->isFree = assignValue;
-                    this->currentPos = splitChunk(this->currentPos, spaceSize, mode);
+                    this->currentPos = splitChunk(this->currentPos, leftSize, mode);
+                    if(1 == mode){
+                        this->spaceLeft -= leftSize;
+                    } else{
+                        this->spaceLeft += leftSize;
+                    }
                     leftSize = 0;
                 }else{ //current position is not big enough
                     this->currentPos->isFree = assignValue;
                     leftSize -= this->currentPos->size;
-                    searchCount += this->findNext(searchCount, mode);
+                    if(1 == mode){
+                        this->spaceLeft -= currentPos->size;
+                    } else{
+                        this->spaceLeft += currentPos->size;
+                    }
+                    if(0 == mode && !canFree()){
+                        break;
+                    }
+                    searchCount = this->findNext(searchCount, mode);
                 }
             }else{
-                searchCount += this->findNext(searchCount, mode);
+                searchCount = this->findNext(searchCount, mode);
             }
         }
         if(this->currentPos == nullptr){
@@ -194,7 +212,7 @@ private:
     }
 
 
-    bool canFree(int spaceSize){
+    bool canFree(){
         if(this->spaceLeft == this->capacity){
             return false;
         }
