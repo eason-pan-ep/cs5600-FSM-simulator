@@ -1,4 +1,5 @@
 #include <iostream>
+#include "./src/FSControllerWithView.h"
 
 void showWelcome(){
     std::cout << "#############################################################\n"
@@ -7,6 +8,7 @@ void showWelcome(){
 }
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    showWelcome();
+
     return 0;
 }

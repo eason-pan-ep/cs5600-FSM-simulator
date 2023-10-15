@@ -9,6 +9,7 @@
 #include <random>
 #include <chrono>
 #include <sstream>
+#include <math.h>
 
 
 
@@ -71,6 +72,36 @@ public:
         std::cout << "\n";
     }
 
+    /**
+     * Running simulation.
+     */
+    void runSimulation(){
+        std::cout << "============================    Simulation Starts    ============================\n";
+        this->printProcesses();
+        if(!this->doCoalesce){
+            std::cout << "Coalesce Disabled.\n";
+        }else{
+            std::cout << "Coalesce Enabled.\n";
+        }
+        for(int i : this->processes){
+            int currentSearch;
+            if(i > 0){
+                currentSearch = this->memory->allocateSpace(i);
+                if(this->doCoalesce){
+                    this->memory->coalesce();
+                }
+                this->printStatus(1, currentSearch, i);
+            }else{
+                currentSearch = this->memory->freeSpace(abs(i));
+                if(this->doCoalesce){
+                    this->memory->coalesce();
+                }
+                this->printStatus(0, currentSearch, abs(i));
+            }
+        }
+        std::cout << "============================    Simulation Complete    ============================\n";
+    }
+
 
 private:
     /**
@@ -128,17 +159,28 @@ private:
      * @param workType 1 - allocate, 0 - free.
      * @param searchCount int. total search used in this work.
      */
-    void printStatus(int workType, int searchCount){
+    void printStatus(int workType, int searchCount, int requirement){
         std::string currentWorkType;
         if(1 == workType){
             currentWorkType = "Allocate";
         }else{
             currentWorkType = "Free";
         }
-        std::cout << "Work type: " << currentWorkType << "\n";
-        std::cout << "Searches made: " << searchCount << "\n";
-        std::cout << "Current Memory Map:\n";
-        this->memory->printMemory();
+        std::cout << "Work Required: " << currentWorkType << " " << requirement << "kb" << "\n";
+        if(searchCount >= 0){
+            std::cout << "Searches made: " << searchCount << "\n";
+            std::cout << "Current Memory Map:\n";
+            this->memory->printMemory();
+        }else{
+            std::cout << "| -- Invalid Requirement -- |\n";
+            if(1 == workType){
+                std::cout << "Can't allocate space when the required space is greater than space left.\n";
+            }else{
+                std::cout << "Can't free space when the memory is all freed. \n";
+            }
+        }
+
+
         std::cout << "-----------------------------------------------\n";
     }
 

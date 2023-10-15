@@ -88,8 +88,10 @@ public:
             return 0;
         }
         if(this->canFree(spaceSize)){ //check whether we can free such amount of space
-            this->spaceLeft += spaceSize;
-            int searchCount = this->useMemory(spaceSize, 0);
+            int processingSize;
+            processingSize = std::min((this->capacity - this->spaceLeft), spaceSize);
+            this->spaceLeft += processingSize;
+            int searchCount = this->useMemory(processingSize, 0);
             return searchCount;
         }
         return -1;
@@ -127,7 +129,7 @@ public:
      * Print out the current memory status.
      */
     void printMemory(){
-        std::cout << "Current Pointer @" << this->currentPos->address << "\n";
+        std::cout << "Current Pointer @ 000" << this->currentPos->address << "\n";
         std::cout << "Memory Status: \n";
         Chunk* current = this->memoryList;
         while(current != nullptr){
@@ -137,7 +139,8 @@ public:
             }else{
                 currentStatus = "In-Use";
             }
-            std::cout << "[ Address: " << current->address << ", Size: " << current->size << ", Status: " << currentStatus << " ]\n";
+            std::cout << "[ Address: (000" << current->address << "), Size: " << current->size << "kb" << ", Status: " << currentStatus << " ]\n";
+            current = current->next;
         }
     }
 
@@ -166,6 +169,7 @@ private:
             if(this->currentPos == nullptr){
                 this->currentPos = this->memoryList;
             }
+
             if(this->currentPos->isFree == !assignValue){
                 if(this->currentPos->size == spaceSize){ //current position is the same as required
                     this->currentPos->isFree = assignValue;
@@ -183,12 +187,15 @@ private:
                 searchCount += this->findNext(searchCount, mode);
             }
         }
+        if(this->currentPos == nullptr){
+            this->currentPos = this->memoryList; //get to the head, if it's at the end
+        }
         return searchCount;
     }
 
 
     bool canFree(int spaceSize){
-        if(this->spaceLeft == this->capacity || spaceSize > (this->capacity - this->spaceLeft)){
+        if(this->spaceLeft == this->capacity){
             return false;
         }
         return true;
@@ -239,7 +246,10 @@ private:
         }else{
             assignValue = false;
         }
-        int newChunkSize = currentChunk->size - spaceSize;
+        int newChunkSize;
+
+        newChunkSize = currentChunk->size - spaceSize;
+
         int newChunkAddress = currentChunk->address + spaceSize;
         Chunk* newChunk = new Chunk(newChunkAddress, newChunkSize, assignValue);
         currentChunk->size = spaceSize;
@@ -247,6 +257,7 @@ private:
         currentChunk->next = newChunk;
         this->chunkCount += 1;
         return newChunk;
+
     }
 };
 

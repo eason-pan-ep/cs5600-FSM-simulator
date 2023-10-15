@@ -17,42 +17,37 @@ void test_print_process_given(){
     delete(testPrint);
 }
 
+void test_run_simulation_random(){
+    auto* testRun = new FSControllerWithView(0, 1024, 5, true);
+    testRun->runSimulation();
+    delete(testRun);
+}
+
+void test_run_simulation_random_coalesce(){
+    auto* testRun = new FSControllerWithView(0, 1024, 5, true, true);
+    testRun->runSimulation();
+    delete(testRun);
+}
 
 
-// adding unit tests in this array
-int (*unitTests[])() = {
-        nullptr,
-};
+
 
 int main(){
-    unsigned int testsPassed = 0;
-    int testsCounter = 0;
-
-    while(unitTests[testsCounter] != nullptr){
-        std::cout << "============= Unit Test " <<  (testsCounter+1) << " =============\n";
-        if(1 == unitTests[testsCounter]()){
-            std::cout << "✓ Passed tests\n";
-            testsPassed ++;
-        }else{
-            std::cout << "✗ Failed tests\n";
-        }
-        testsCounter ++;
-    }
-    if(testsCounter > 0){
-        std::cout << "\n---------------------------------------\n";
-        std::cout << testsPassed << " of " << testsCounter << " tests passed\n";
-        if(testsPassed == testsCounter){
-            std::cout << "❖ Passed All Tests!!\n";
-        }
-    }else{
-        std::cout << "No Unit Test Provided.\n";
-    }
-
-    std::cout << "Printing Methods Tests:\n";
-    std::cout << "Random Process:\n";
+    std::cout << "*****************************************************\n";
+    std::cout << "Print Random Processes Test:\n";
     test_print_processes_random();
-    std::cout << "Given Process:\n";
+
+    std::cout << "*****************************************************\n";
+    std::cout << "Print Given Processes Test:\n";
     test_print_process_given();
+
+    std::cout << "*****************************************************\n";
+    std::cout << "Running Simulation Test -- NO coalesce: \n";
+    test_run_simulation_random();
+
+    std::cout << "*****************************************************\n";
+    std::cout << "Running Simulation Test -- with coalesce: \n";
+    test_run_simulation_random_coalesce();
 
 
     return 0;
