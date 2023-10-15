@@ -5,6 +5,7 @@
 #ifndef CS5600_FSM_SIMULATOR_MEMORY_H
 #define CS5600_FSM_SIMULATOR_MEMORY_H
 #include "Chunk.h"
+#include <iostream>
 
 
 class Memory {
@@ -118,6 +119,25 @@ public:
             }else{
                 current = current->next;
             }
+        }
+    }
+
+
+    /**
+     * Print out the current memory status.
+     */
+    void printMemory(){
+        std::cout << "Current Pointer @" << this->currentPos->address << "\n";
+        std::cout << "Memory Status: \n";
+        Chunk* current = this->memoryList;
+        while(current != nullptr){
+            std::string currentStatus;
+            if(current->isFree){
+                currentStatus = "Free";
+            }else{
+                currentStatus = "In-Use";
+            }
+            std::cout << "[ Address: " << current->address << ", Size: " << current->size << ", Status: " << currentStatus << " ]\n";
         }
     }
 

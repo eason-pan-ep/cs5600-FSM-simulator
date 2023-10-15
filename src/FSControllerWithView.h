@@ -31,7 +31,10 @@ public:
      * @param doCoalesce
      * @param userInput process list "10,-10,-20"
      */
-    FSControllerWithView(int headerSize=0, int memoryCapacity=1024, int processCount=10, bool isRandom=false, bool doCoalesce=false, std::string userInput=""){
+    FSControllerWithView(int headerSize, int memoryCapacity, int processCount=10, bool isRandom=false, bool doCoalesce=false, std::string userInput=""){
+        if(headerSize > memoryCapacity){
+            throw std::invalid_argument("Header size should be smaller than memoryCapacity.\n");
+        }
         if(headerSize < 0 || headerSize > 100){
             throw std::invalid_argument("Header size range: 0 - 100\n");
         }
@@ -120,6 +123,24 @@ private:
     }
 
 
+    /**
+     * print current work status.
+     * @param workType 1 - allocate, 0 - free.
+     * @param searchCount int. total search used in this work.
+     */
+    void printStatus(int workType, int searchCount){
+        std::string currentWorkType;
+        if(1 == workType){
+            currentWorkType = "Allocate";
+        }else{
+            currentWorkType = "Free";
+        }
+        std::cout << "Work type: " << currentWorkType << "\n";
+        std::cout << "Searches made: " << searchCount << "\n";
+        std::cout << "Current Memory Map:\n";
+        this->memory->printMemory();
+        std::cout << "-----------------------------------------------\n";
+    }
 
 };
 
