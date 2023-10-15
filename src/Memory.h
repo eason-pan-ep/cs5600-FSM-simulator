@@ -17,8 +17,8 @@ private:
 
 public:
     Memory(int capacity){
-        if(capacity < 1 || capacity > 50){
-            throw std::invalid_argument("Capacity should between 1 - 50\n");
+        if(capacity < 1 || capacity > 10000){
+            throw std::invalid_argument("Capacity should between 1 - 10000\n");
         }
         this->capacity = capacity;
         this->spaceLeft = capacity;
@@ -65,6 +65,9 @@ public:
      * @return -1 when failed. Otherwise, return total search time.
      */
     int allocateSpace(int spaceSize){
+        if(0 == spaceSize){
+            return 0;
+        }
         if(this->canAllocate(spaceSize)){ //check whether we can allocate such amount of space
             this->spaceLeft -= spaceSize;
             int searchCount = this->useMemory(spaceSize, 1);
@@ -80,6 +83,9 @@ public:
      * @return -1 when failed. Otherwise, return total search time.
      */
     int freeSpace(int spaceSize){
+        if(0 == spaceSize){
+            return 0;
+        }
         if(this->canFree(spaceSize)){ //check whether we can free such amount of space
             this->spaceLeft += spaceSize;
             int searchCount = this->useMemory(spaceSize, 0);

@@ -102,6 +102,37 @@ build TestMemory: CXX_EXECUTABLE_LINKER__TestMemory_Debug CMakeFiles/TestMemory.
   TARGET_FILE = TestMemory
   TARGET_PDB = TestMemory.dbg
 
+# =============================================================================
+# Object build statements for EXECUTABLE target TestControlView
+
+
+#############################################
+# Order-only phony target for TestControlView
+
+build cmake_object_order_depends_target_TestControlView: phony || CMakeFiles/TestControlView.dir
+
+build CMakeFiles/TestControlView.dir/tests/testControlView.cpp.o: CXX_COMPILER__TestControlView_unscanned_Debug /Users/easonpan/Documents/Gits/CS5600/cs5600-FSM-simulator/tests/testControlView.cpp || cmake_object_order_depends_target_TestControlView
+  DEP_FILE = CMakeFiles/TestControlView.dir/tests/testControlView.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/TestControlView.dir
+  OBJECT_FILE_DIR = CMakeFiles/TestControlView.dir/tests
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target TestControlView
+
+
+#############################################
+# Link the executable TestControlView
+
+build TestControlView: CXX_EXECUTABLE_LINKER__TestControlView_Debug CMakeFiles/TestControlView.dir/tests/testControlView.cpp.o
+  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
+  OBJECT_DIR = CMakeFiles/TestControlView.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = TestControlView
+  TARGET_PDB = TestControlView.dbg
+
 
 #############################################
 # Utility command for edit_cache
@@ -136,7 +167,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /Users/easonpan/Documents/Gits/CS5600/cs5600-FSM-simulator/cmake-build-debug
 
-build all: phony cs5600_FSM_simulator TestMemory
+build all: phony cs5600_FSM_simulator TestMemory TestControlView
 
 # =============================================================================
 # Built-in targets
