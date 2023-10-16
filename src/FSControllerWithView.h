@@ -65,7 +65,7 @@ public:
      * Print out running processes (malloc - positive num & free - negative num)
      */
     void printProcesses(){
-        std::cout << "Processes: ";
+        std::cout << "Operations: ";
         for(int i : this->processes){
             std::cout << i << ", ";
         }
@@ -78,11 +78,16 @@ public:
     void runSimulation(){
         std::cout << "============================    Simulation Starts    ============================\n";
         this->printProcesses();
+        int totalSearch = 0;
+        std::vector<int> searchLog;
+
         if(!this->doCoalesce){
             std::cout << "Coalesce Disabled.\n";
         }else{
             std::cout << "Coalesce Enabled.\n";
         }
+        std::cout << "-----------------------------------------------\n";
+
         for(int i : this->processes){
             int currentSearch;
             if(i > 0){
@@ -98,7 +103,15 @@ public:
                 }
                 this->printStatus(0, currentSearch, abs(i));
             }
+            totalSearch += currentSearch;
+            searchLog.push_back(currentSearch);
         }
+        std::cout << "Total search: " << totalSearch << " times\n";
+        std::cout << "Search Log: \n[ ";
+        for(int i : searchLog){
+            std::cout << i << ", ";
+        }
+        std::cout << "]\n";
         std::cout << "============================    Simulation Complete    ============================\n";
     }
 
