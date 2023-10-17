@@ -78,6 +78,78 @@ public:
 
 
     /**
+     * Static allocation, only allocate the space when the chunk is equals to or greater than the required space.
+     * Split after allocation when the chunk is greater than required.
+     * @param spaceSize size to allocate
+     * @return -1 for can't allocate, otherwise, returns the number of operations.
+     */
+    int staticAllocate(int spaceSize){
+        if(0 == spaceSize){
+            return 0;
+        }
+        if(this->canAllocate(spaceSize)){
+            int searchCount = 0;
+            for(int i = 0; i < this->chunkCount; i++){
+                if(this->currentPos == nullptr){ //get to the head for another circle
+                    this->currentPos = this->memoryList;
+                    searchCount += 1;
+                }
+                if(this->currentPos->size == spaceSize && this->currentPos->isFree){
+                    this->currentPos->isFree = false;
+                    this->spaceLeft -= spaceSize;
+                    searchCount += 1;
+                    break;
+                }else if(this->currentPos->size < spaceSize){
+                    this->currentPos = this->currentPos->next;
+                    searchCount += 1;
+                }else{
+                    this->currentPos->isFree = false;
+                    Chunk* newChunk = this->splitChunk(this->currentPos, spaceSize, 1);
+                    searchCount += 1;
+                    this->spaceLeft -= spaceSize;
+                    this->currentPos = newChunk;
+                    break;
+                }
+            }
+            return searchCount;
+        }
+        return -1;
+    }
+
+    /**
+     * Static free a given space, only free the block which is the same size as requested.
+     * @param spaceSize size of space to free
+     * @return -1 if can't free, otherwise, return the total operation count.
+     */
+    int staticFree(int spaceSize){
+        if(0 == spaceSize){
+            return 0;
+        }
+        if(this->canFree()){
+            int searchCount = 0;
+            bool isFreed = false;
+            while(!isFreed){
+                if(this->currentPos == nullptr){ //get to the head for another circle
+                    this->currentPos = this->memoryList;
+                    searchCount += 1;
+                }
+                if(this->currentPos->size == spaceSize){
+                    this->spaceLeft += spaceSize;
+                    this->currentPos->isFree = true;
+                    isFreed = true;
+                    searchCount += 1;
+                }else{
+                    this->currentPos = this->currentPos->next;
+                    searchCount += 1;
+                }
+            }
+            return searchCount;
+        }
+        return -1;
+    }
+
+
+    /**
      * Free the given amount of space in the memory.
      * @param spaceSize the size we want to free.
      * @return -1 when failed. Otherwise, return total search time.
@@ -100,17 +172,20 @@ public:
     /**
      * Coalesce free space in the memory.
      * Generally, then get the currentPos to the first free space.
+     * @return total operation count
      */
-    void coalesce(){
+    int coalesce(){
         if(1 == this->chunkCount){
-            return;
+            return 0;
         }
+        int opCount = 0;
         Chunk* current = this->memoryList;
 
         while(current->next != nullptr){
             if(!current->isFree){
                 current = current->next;
             }else if(current->next->isFree){
+                opCount += 1;
                 this->currentPos = current;
                 Chunk* temp = current->next;
                 current->next = temp->next;
@@ -121,6 +196,7 @@ public:
                 current = current->next;
             }
         }
+        return opCount;
     }
 
 
@@ -207,6 +283,7 @@ private:
         }
         if(this->currentPos == nullptr){
             this->currentPos = this->memoryList; //get to the head, if it's at the end
+            searchCount += 1;
         }
         return searchCount;
     }
@@ -255,7 +332,7 @@ private:
      * @param currentChunk ptr to the current chunk
      * @param spaceSize target used size of space
      * @param mode 1 - allocate, 0 - free
-     * @return
+     * @return the divided new chunk.
      */
     Chunk* splitChunk(Chunk* currentChunk, int spaceSize, int mode){
         bool assignValue;

@@ -73,9 +73,12 @@ public:
     }
 
     /**
-     * Running simulation.
+     * Running simulation. doing by size.
+     * @param mode  1 - all doing by size, can allocate and free any size at any chunk,
+     *              0 - only allocate when a chunk is equal to or greater than requested,
+     *                  only free the chunk exactly the size requested (assume good inputs)
      */
-    void runSimulation(){
+    void runSimulation(int mode){
         std::cout << "============================    Simulation Starts    ============================\n";
         this->printProcesses();
         int totalSearch = 0;
@@ -89,21 +92,30 @@ public:
         std::cout << "-----------------------------------------------\n";
 
         for(int i : this->processes){
-            int currentSearch;
+            int currentSearch = 0;
             if(i > 0){
-                currentSearch = this->memory->allocateSpace(i);
+                if(1 == mode){
+                    currentSearch = this->memory->allocateSpace(i);
+                }else{
+                    currentSearch = this->memory->staticAllocate(i);
+                }
                 if(this->doCoalesce){
-                    this->memory->coalesce();
+                    currentSearch += this->memory->coalesce();
                 }
                 this->printStatus(1, currentSearch, i);
+
             }else{
-                currentSearch = this->memory->freeSpace(abs(i));
+                if(1 == mode){
+                    currentSearch = this->memory->freeSpace(abs(i));
+                }else{
+                    currentSearch = this->memory->staticFree(abs(i));
+                }
                 if(this->doCoalesce){
-                    this->memory->coalesce();
+                    currentSearch += this->memory->coalesce();
                 }
                 this->printStatus(0, currentSearch, abs(i));
             }
-            if(currentSearch < 0){
+            if(currentSearch < 0){ // invalid operation may be included when in mode 1
                 currentSearch = 0;
             }
             currentSearch += 1; //add the 1 operation count for free or allocation call
@@ -118,6 +130,9 @@ public:
         std::cout << "]\n";
         std::cout << "============================    Simulation Complete    ============================\n";
     }
+
+
+
 
 
 private:
@@ -185,7 +200,7 @@ private:
         }
         std::cout << "Work Required: " << currentWorkType << " " << requirement << "kb" << "\n";
         if(searchCount >= 0){
-            std::cout << "Searches made: " << searchCount << "\n";
+            std::cout << "Operation Count: " << searchCount << "\n";
             std::cout << "Current Memory Map:\n";
             this->memory->printMemory();
         }else{
