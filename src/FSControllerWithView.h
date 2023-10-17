@@ -103,6 +103,9 @@ public:
                 }
                 this->printStatus(0, currentSearch, abs(i));
             }
+            if(currentSearch < 0){
+                currentSearch = 0;
+            }
             totalSearch += currentSearch;
             searchLog.push_back(currentSearch);
         }
