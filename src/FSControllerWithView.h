@@ -106,7 +106,7 @@ public:
             if(currentSearch < 0){
                 currentSearch = 0;
             }
-            currentSearch += 1; //add the 1 operation count for initial step
+            currentSearch += 1; //add the 1 operation count for free or allocation call
             totalSearch += currentSearch;
             searchLog.push_back(currentSearch);
         }
