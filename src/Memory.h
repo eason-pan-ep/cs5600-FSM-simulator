@@ -133,7 +133,7 @@ public:
                     this->currentPos = this->memoryList;
                     searchCount += 1;
                 }
-                if(this->currentPos->size == spaceSize){
+                if(this->currentPos->size == spaceSize && !this->currentPos->isFree){
                     this->spaceLeft += spaceSize;
                     this->currentPos->isFree = true;
                     isFreed = true;
