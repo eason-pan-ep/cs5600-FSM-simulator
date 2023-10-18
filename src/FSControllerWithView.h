@@ -122,8 +122,8 @@ public:
             totalSearch += currentSearch;
             searchLog.push_back(currentSearch);
         }
-        std::cout << "Total search: " << totalSearch << " times\n";
-        std::cout << "Search Log: \n[ ";
+        std::cout << "Total operations: " << totalSearch << " times\n";
+        std::cout << "Operation Count Log: \n[ ";
         for(int i : searchLog){
             std::cout << i << ", ";
         }
