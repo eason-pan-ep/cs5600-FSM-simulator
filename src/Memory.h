@@ -127,8 +127,7 @@ public:
         }
         if(this->canFree()){
             int searchCount = 0;
-            bool isFreed = false;
-            while(!isFreed){
+            for(int i = 0; i < this->chunkCount; i++){
                 if(this->currentPos == nullptr){ //get to the head for another circle
                     this->currentPos = this->memoryList;
                     searchCount += 1;
@@ -136,8 +135,8 @@ public:
                 if(this->currentPos->size == spaceSize && !this->currentPos->isFree){
                     this->spaceLeft += spaceSize;
                     this->currentPos->isFree = true;
-                    isFreed = true;
                     searchCount += 1;
+                    break;
                 }else{
                     this->currentPos = this->currentPos->next;
                     searchCount += 1;
